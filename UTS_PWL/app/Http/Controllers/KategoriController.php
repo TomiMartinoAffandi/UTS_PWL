@@ -158,42 +158,6 @@ class KategoriController extends Controller
         return redirect('/');
     }
 
-    public function create()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Tambah kategori Barang',
-            'list' => ['Home', 'kategori', 'Tambah']
-        ];
-
-        $page = (object) [
-            'title' => 'Tambah kategori user baru'
-        ];
-
-        $activeMenu = 'kategori'; // set menu yang sedang aktif
-
-        return view('kategori.create', [
-            'breadcrumb' => $breadcrumb, 
-            'page' => $page,
-            'activeMenu' => $activeMenu
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik di tabel m_user kolom username
-            'kategori_kode' => 'required|string|min:3|unique:m_user,username',
-            'kategori_nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
-        ]);
-
-        KategoriModel::create([
-            'kategori_kode' => $request->kategori_kode,
-            'kategori_nama' => $request->kategori_nama
-        ]);
-
-        return redirect('/kategori')->with('success', 'Data user berhasil disimpan');
-    }
-
     public function show(string $id)
     {
         $kategori = KategoriModel::find($id);
@@ -210,58 +174,5 @@ class KategoriController extends Controller
         $activeMenu = 'kategori'; // set menu yang sedang aktif
 
         return view('kategori.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'kategori' => $kategori, 'activeMenu' => $activeMenu]);
-    }
-
-    public function edit(string $id)
-    {
-        $kategori = KategoriModel::find($id);
-
-        $breadcrumb = (object) [
-            'title' => 'Edit kategori User',
-            'list' => ['Home', 'kategori', 'Edit']
-        ];
-
-        $page = (object) [
-            'title' => 'Edit kategori User'
-        ];
-
-        $activeMenu = 'kategori'; // set menu yang sedang aktif
-
-        return view('kategori.edit', ['breadcrumb' => $breadcrumb, 'page' => $page, 'kategori' => $kategori, 'activeMenu' => $activeMenu]);
-    }
-
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            // username harus diisi, berupa string, minimal 3 karakter,
-            // dan bernilai unik di tabel m_user kolom username kecuali untuk user dengan id yang sedang diedit
-            'kategori_kode' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
-            'kategori_nama' => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
-        ]);
-
-        KategoriModel::find($id)->update([
-            'kategori_kode' => $request->kategori_kode,
-            'kategori_nama' => $request->kategori_nama,
-        ]);
-
-        return redirect('/kategori')->with('success', 'Data user berhasil diubah');
-    }
-
-    public function destroy(string $id)
-    {
-        $check = KategoriModel::find($id);
-        if (!$check) { // untuk mengecek apakah data user dengan id yang dimaksud ada atau tidak
-            return redirect('/kategori')->with('error', 'Data user tidak ditemukan');
-        }
-
-        try {
-            KategoriModel::destroy($id); // Hapus data user
-
-            return redirect('/kategori')->with('success', 'Data user berhasil dihapus');
-        } catch (\Illuminate\Database\QueryException $e) {
-
-            // Jika terjadi error ketika menghapus data, redirect kembali ke halaman dengan membawa pesan error
-            return redirect('/kategori')->with('error', 'Data user gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
-        }
     }
 }
